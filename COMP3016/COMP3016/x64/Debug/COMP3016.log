@@ -1,0 +1,5 @@
+﻿  COMP3016.cpp
+C:\Users\itsni\Documents\GitHub\COMP3016-70\COMP3016\COMP3016\COMP3016.cpp(157,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\itsni\Documents\GitHub\COMP3016-70\COMP3016\COMP3016\COMP3016.cpp(208,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\itsni\Documents\GitHub\COMP3016-70\COMP3016\COMP3016\COMP3016.cpp(209,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  COMP3016.vcxproj -> C:\Users\itsni\Documents\GitHub\COMP3016-70\COMP3016\x64\Debug\COMP3016.exe
