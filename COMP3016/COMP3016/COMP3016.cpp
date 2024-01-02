@@ -29,6 +29,19 @@ float fov = 45.0f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+const int numParticles = 10000;
+
+struct Particle {
+    glm::vec3 position;
+    glm::vec3 velocity;
+};
+
+Particle particles[numParticles];
+
+void initializeParticles();
+
+void updateParticles(float deltaTime);
+
 void processInput(GLFWwindow* window);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -46,7 +59,7 @@ int main() {
         return -1;
     }
 
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Raindrops In Motion", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Rain Simulation", nullptr, nullptr);
 
     if (window == nullptr) {
         cout << "GLFW Window did not instantiate" << endl;
@@ -64,10 +77,8 @@ int main() {
         return -1;
     }
 
-    cout << "GLEW Version: " << glewGetString(GLEW_VERSION) << endl;
-
     glEnable(GL_DEPTH_TEST);
-    
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
@@ -75,7 +86,7 @@ int main() {
     unsigned char* data = stbi_load("Resources/grass.png", &width, &height, &nrChannels, 0);
 
     if (!data) {
-        std::cout << "Failed to load image -" << stbi_failure_reason() << std::endl;
+        std::cout << "Failed to load image: " << stbi_failure_reason() << std::endl;
     }
     else {
     }
@@ -152,8 +163,9 @@ int main() {
 
     glm::mat4 projection = glm::perspective(glm::radians(fov), 1280.0f / 720.0f, 0.1f, 100.0f);
 
-    while (!glfwWindowShouldClose(window)) {
+    initializeParticles();
 
+    while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -161,6 +173,15 @@ int main() {
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        updateParticles(deltaTime);
+
+        glPointSize(2.0f);
+        glBegin(GL_POINTS);
+        for (int i = 0; i < numParticles; ++i) {
+            glVertex3fv(glm::value_ptr(particles[i].position));
+        }
+        glEnd();
 
         glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
@@ -191,6 +212,32 @@ int main() {
     return 0;
 }
 
+void initializeParticles() {
+    for (int i = 0; i < numParticles; ++i) {
+        particles[i].position = glm::vec3(
+            static_cast<float>(rand()) / RAND_MAX * 20.0f - 10.0f,
+            static_cast<float>(rand()) / RAND_MAX * 5.0f + 5.0f,
+            static_cast<float>(rand()) / RAND_MAX * 20.0f - 10.0f
+        );
+
+        particles[i].velocity = glm::vec3(
+            0.0f,                
+            -static_cast<float>(rand()) / RAND_MAX * 5.0f - 2.0f,
+            0.0f                 
+        );
+    }
+}
+
+void updateParticles(float deltaTime) {
+    for (int i = 0; i < numParticles; ++i) {
+        particles[i].position += particles[i].velocity * deltaTime;
+
+        if (particles[i].position.y < 0.0f) {
+            particles[i].position.y = 10.0f; 
+        }
+    }
+}
+
 void processInput(GLFWwindow* window) {
     float cameraSpeed = 2.5f * deltaTime;
 
@@ -206,7 +253,7 @@ void processInput(GLFWwindow* window) {
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
+    float yoffset = lastY - ypos; 
 
     float sensitivity = 0.1f;
 
