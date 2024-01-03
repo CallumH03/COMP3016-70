@@ -29,7 +29,7 @@ float fov = 45.0f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-const int numParticles = 10000;
+const int numParticles = 100000;
 
 struct Particle {
     glm::vec3 position;
@@ -87,6 +87,7 @@ int main() {
 
     if (!data) {
         std::cout << "Failed to load image: " << stbi_failure_reason() << std::endl;
+
     }
     else {
     }
@@ -176,12 +177,17 @@ int main() {
 
         updateParticles(deltaTime);
 
+        glUseProgram(shaderProgram);
+        glUniform1i(glGetUniformLocation(shaderProgram, "objectType"), 0);
+
         glPointSize(2.0f);
         glBegin(GL_POINTS);
         for (int i = 0; i < numParticles; ++i) {
             glVertex3fv(glm::value_ptr(particles[i].position));
         }
         glEnd();
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "objectType"), 1);
 
         glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
@@ -221,9 +227,9 @@ void initializeParticles() {
         );
 
         particles[i].velocity = glm::vec3(
-            0.0f,                
+            0.0f,
             -static_cast<float>(rand()) / RAND_MAX * 5.0f - 2.0f,
-            0.0f                 
+            0.0f
         );
     }
 }
@@ -233,7 +239,7 @@ void updateParticles(float deltaTime) {
         particles[i].position += particles[i].velocity * deltaTime;
 
         if (particles[i].position.y < 0.0f) {
-            particles[i].position.y = 10.0f; 
+            particles[i].position.y = 10.0f;
         }
     }
 }
@@ -253,7 +259,7 @@ void processInput(GLFWwindow* window) {
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; 
+    float yoffset = lastY - ypos;
 
     float sensitivity = 0.1f;
 
