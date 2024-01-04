@@ -87,9 +87,6 @@ int main() {
 
     if (!data) {
         std::cout << "Failed to load image: " << stbi_failure_reason() << std::endl;
-
-    }
-    else {
     }
 
     GLuint textureID;
@@ -162,6 +159,68 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    GLfloat quadVertices[] = {
+    -0.5f,  0.4f, -0.5f,  0.0f, 0.0f,
+     0.5f,  0.4f, -0.5f,  1.0f, 0.0f,
+     0.5f,  1.4f, -0.5f,  1.0f, 1.0f,
+     0.5f,  1.4f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  1.4f, -0.5f,  0.0f, 1.0f,
+    -0.5f,  0.4f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.4f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.4f,  0.5f,  1.0f, 0.0f,
+     0.5f,  1.4f,  0.5f,  1.0f, 1.0f,
+     0.5f,  1.4f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  1.4f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.4f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  1.4f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+    -0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+    -0.5f,  0.4f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+     0.5f,  1.4f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.4f,  0.5f,  0.0f, 0.0f,
+     0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.4f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.4f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.4f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.4f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.4f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  1.4f, -0.5f,  0.0f, 1.0f,
+     0.5f,  1.4f, -0.5f,  1.0f, 1.0f,
+     0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+     0.5f,  1.4f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  1.4f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  1.4f, -0.5f,  0.0f, 1.0f
+    };
+
+
+    GLuint quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+
+    glBindVertexArray(quadVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+  
+
     glm::mat4 projection = glm::perspective(glm::radians(fov), 1280.0f / 720.0f, 0.1f, 100.0f);
 
     initializeParticles();
@@ -193,6 +252,7 @@ int main() {
 
         glm::mat4 model = glm::mat4(1.0f);
 
+
         glUseProgram(shaderProgram);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -200,10 +260,15 @@ int main() {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glUniform1i(glGetUniformLocation(shaderProgram, "ourTexture"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram, "Texture"), 0);
 
         glBindVertexArray(planeVAO);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "objectType"), 2);
+
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLES, 0,36);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -211,6 +276,8 @@ int main() {
 
     glDeleteVertexArrays(1, &planeVAO);
     glDeleteBuffers(1, &planeVBO);
+    glDeleteVertexArrays(1, &quadVAO);
+    glDeleteBuffers(1, &quadVBO);
 
     glfwDestroyWindow(window);
     glfwTerminate();
