@@ -135,6 +135,14 @@
   <ItemGroup>
     <ClCompile Include="COMP3016.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="glew32.dll" />
+    <None Include="shader.frag" />
+    <None Include="shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\grass.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

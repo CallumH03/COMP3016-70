@@ -1,10 +1,10 @@
 #version 330 core
-in vec2 TexCoord;
+in vec2 TexCoord; //input variable from vertex shader
 
-uniform sampler2D Texture;  
-uniform int objectType;         
+uniform sampler2D Texture; //texture sampler 
+uniform int objectType; //variable for determing texture/color  
 
-out vec4 FragColor;
+out vec4 FragColor; //color variable
 
 void main() {
     if (objectType == 0) {
