@@ -71,7 +71,7 @@ int main() {
 
 
     //Creates GLFW Window
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Rain Simulation", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Raindrops in Motion", nullptr, nullptr);
 
     //Error handling
     if (window == nullptr) {
